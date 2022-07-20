@@ -3,6 +3,7 @@ import {
     NotFoundException,
     ConflictException,
     Injectable,
+    Logger
 } from '@nestjs/common';
 import * as cpfValidator from 'node-cpf';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,11 +13,14 @@ import { CreateCpfInput } from './dto/create-cpf-input';
 
 @Injectable()
 export class CpfService {
+  logger: Logger;
 
     constructor(
         @InjectRepository(Cpf) 
-        private repository: Repository<Cpf>
-    ) {}
+        private repository: Repository<Cpf>,
+    ) {
+        this.logger = new Logger(CpfService.name);
+    }
 
     async getAll(): Promise<Cpf[]> {
         const cpfs = await this.repository.find();
@@ -32,7 +36,8 @@ export class CpfService {
             const cpfData = await this.repository.findOne({ where: { cpf: cpfUnMask } });
 
             if (!cpfData) {
-                throw new NotFoundException("NotFoundCpfException");
+                this.logger.warn(`The CPF ${cpfIsValid}  is not found.`);
+                throw new NotFoundException("CPF inst found.", "NotFoundCpfException");
             }
 
             return cpfData;
@@ -49,7 +54,8 @@ export class CpfService {
             const cpfExist = await this.repository.findOne({ where: { cpf: cpfUnMask } });
 
             if (cpfExist) {
-                throw new ConflictException("ExistsCpfException");
+                this.logger.warn(`The CPF ${cpfIsValid}  is already exist.`);
+                throw new ConflictException("CPF is already exist.", "ExistsCpfException");
             }
             input.cpf = cpfUnMask;
             
@@ -71,7 +77,8 @@ export class CpfService {
         const cpfValidate = cpfValidator.validate(cpf);
 
         if (cpfValidate === false) {
-            throw new BadRequestException("InvalidCpfException");
+            this.logger.warn(`The CPF ${cpf} is not valid`);
+            throw new BadRequestException("CPF is not valid.", "InvalidCpfException");
         }
 
         return true;

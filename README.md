@@ -1,73 +1,64 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+## Descrição
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este projeto foi desenvolvido em Nodejs, utilizando framework NestJs.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Por que NestJs?
 
-## Description
+Afim de agilizar o desenvolvimento e utilização do padrão oferecido pelo framework.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## O banco de dados
 
-## Installation
+Para este projeto foi avaliado melhor utilizar o MongoDB, pois a estutura de banco não terá relações com muitas collections, a estrutura é simples.
 
-```bash
-$ npm install
+## Estrutura
+
+No projetos temos algumas separações de arquivos com suas responsabilidades:
+
+- create-cpf-input: Arquivo contendo as validações dos inputs ao criar um novo cpf, este arquivo é instanciado na criação de um novo cpf;
+- cpf.entity: Arquivo com a estrutura básica da coleção e seus tipos, seria a model do sistema;
+- cpf.module: Arquivo base, que serve como um pacote dos arquivos da coleção CPF. No NestJs, os arquivos são todos importados no app.module, é possível importar todos manualmente dentro deste arquivo um a um, controller, entity, service, porém criando um module ao invés de importar todos esses arquivos e poluir o app.module, criamos um module com as importações da coleção uma única vez;
+- cpf.service: Responsável pela regra de negócio que será retornada pelo controller;
+- cpfs.controller: Contém as rotas getAll(), checkCpf(), create() e delete(), cujo a lógica está no cpf.service;
+- common/test/TestUtil: Criamos uma classe para gerar um cpf mockado para nossos testes.
+
+## Instalação
+
+```bash 
+  - Copie o .env.example e cole com o nome .env;
 ```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```bash 
+  - Rode o comando docker-compose up;
 ```
+## Testes
 
-## Test
+No projeto estamos testando o cpf.service e todas suas funções com os mocks, utilizamos o Jest para os testes.
 
+- Teste getAll: Testa a lista de cpfs, para isso criamos nosso cpf mockado duas vezes e fizemos o seguinte teste se a lista tem o tamanho de dois e se o método mockado é chamado uma vez;
+
+- Teste checkCPF: Testa o retorno da consulta por cpf, mockamos um cpf e testamos se o objeto contém a estrutura {cpf: 'cpfMockado'} no json e se o método mockado é chamado uma vez, também mockamos um cpf nulo para testar a exception cpf não encontrado e se o método mckado foi chamado uma vez;
+
+- Teste create: Mockamos um cpf e testamos se foi retornado um objeto com cpf e se o método mockado foi chamado uma vez, também testamos a exception quando existe um cpf;
+
+- Teste delete: Mockamos um cpf e testamos o deletar desse cpf, testamos se o deletar retorna um valor verdadeiro e se o método mockado foi chamado uma vez, também testamos quando um cpf não existe no banco na hora de deletar;
+
+- Teste cpfIsValid: Geramos um cpf válido e chamamos a função para verificar, caso seja verdadeiro o cpf é válido, testamos um cpf nulo para testar a exception de quando um cpf não é válido.
+
+## Comandos teste
 ```bash
 # unit tests
 $ npm run test
 
-# e2e tests
-$ npm run test:e2e
+$ npm run test:watch
 
 # test coverage
 $ npm run test:cov
 ```
+## Documentação
 
-## Support
+- Há logs no console;
+- Há uma collection das rotas utilizadas na api, na raiz do projeto (cpf.postman_collection.json);
+- na pasta /diagrams, contém diagramas de atividade de cada função.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Autor - Jonathan Cruz
+- Website - [https://jonathansc92.github.io/jonathancruzdev/?language=ptBr]
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).

@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Cpf } from './../cpfs/cpf.entity';
 import { CpfService } from './cpf.service';
 import TestUtil from './../../common/test/TestUtil';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import * as cpfValidator from 'node-cpf';
 
 describe('CpfService', () => {
@@ -13,7 +13,7 @@ describe('CpfService', () => {
     find: jest.fn(),
     findOne: jest.fn(),
     save: jest.fn(),
-    delete: jest.fn(),
+    delete: jest.fn()
   };
 
   beforeAll(async () => {
@@ -110,6 +110,19 @@ describe('CpfService', () => {
       expect(deleteCpf).toBeFalsy();
       expect(mockRepository.findOne).toBeCalledTimes(1);
       expect(mockRepository.delete).toBeCalledTimes(1);
+    });
+  });
+
+  describe('cpfIsValid', () => {
+    it('should cpf is valid', async () => {
+      const cpf = TestUtil.giveAMeAValidCpf();
+      const cpfIsValid = await service.cpfIsValid(cpf.cpf);
+      expect(cpfIsValid).toBeTruthy();
+    });
+    it('should cpf is not valid', async () => {
+      await service.cpfIsValid(null).catch(e => {
+        expect(e).toBeInstanceOf(BadRequestException);
+      });
     });
   });
 });

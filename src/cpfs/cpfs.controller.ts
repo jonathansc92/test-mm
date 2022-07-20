@@ -12,21 +12,21 @@ export class CpfsController {
 
     @Get()
     async getAll(): Promise<Cpf[]> {
-        return this.service.getAll();
+        return await this.service.getAll();
     }
 
     @Get(':cpf')
     async checkCpf(@Param('cpf') cpf: string): Promise<Cpf> {
-        return this.service.checkCpf(cpf);
+        return await this.service.checkCpf(cpf);
     }
 
     @Post()
     async create(@Body() cpf: CreateCpfInput): Promise<Cpf> {
-        return this.service.create(cpf);
+        return await this.service.create(cpf);
     }
 
     @Delete(':cpf')
     async delete(@Param('cpf') cpf: string) {
-        return this.service.delete(cpf);
+        return await this.service.delete(cpf);
     }
 }
